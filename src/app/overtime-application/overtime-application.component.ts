@@ -170,7 +170,6 @@ export class OvertimeApplicationComponent implements OnInit {
   
   isPeriodDropdownVisible = false;
   inputStatePeriod: 'danger' | 'warning' | 'normal' = 'normal';
-
   lastFocusedInput: 'company' | 'period' | 'employee' | null = null;
 
   filterList<T>(value: string, list: T[], keys: (keyof T)[]): T[] {
@@ -188,19 +187,15 @@ export class OvertimeApplicationComponent implements OnInit {
   updateDropdownVisibility(list: Array<{ name: string }>, value: string): boolean {
     return list.length > 0 && value !== '';
   }
-  
 
- 
   onPeriodInput(event: Event) {
     const input = event.target as HTMLInputElement;
     const value = input.value.trim();
-
     // Filter the period list based on the input value
     this.filteredPeriods = this.filterList(value, this.periodList, ['name']);
     this.isPeriodDropdownVisible = this.updateDropdownVisibility(this.filteredPeriods, value);
     this.updateInputState('period', value); // Update input state
   }
-
 
   onPeriodSelect(name: string, selRow: {}) {
     //console.log(selRow)
@@ -217,15 +212,12 @@ export class OvertimeApplicationComponent implements OnInit {
         this.inputStatePeriod = 'normal';
       
     } else if (list.length === 0) {
-     
         this.inputStatePeriod = 'danger';
       
-    } else if (list.length > 1) {
-     
+    } else if (list.length > 1) {  
         this.inputStatePeriod = 'warning';
       
     } else {
-    
         this.inputStatePeriod = 'normal';
       
     }
@@ -262,6 +254,7 @@ export class OvertimeApplicationComponent implements OnInit {
 
 //TODO: This is where the data is processed
 async ProcessData(data: { employee: string, company: string, payrollperiod: string }): Promise<void> {
+  // NOTE: Alerts 
   const showLoading = () => {
     Swal.fire({
       title: 'Processing...',
@@ -272,7 +265,7 @@ async ProcessData(data: { employee: string, company: string, payrollperiod: stri
   };
 
   const showSuccess = () => {
-    Swal.fire('Success!', 'Your operation was successful!', 'success');
+    Swal.fire('Success!', 'Overtime Applicaiton successfully!', 'success');
   };
 
   const showError = (status: number) => {
@@ -281,7 +274,11 @@ async ProcessData(data: { employee: string, company: string, payrollperiod: stri
 
     if (status === 417) {
       title = 'Notice';
-      text = 'You already have an Overtime Application in place.';
+      text = 'You already have an Overtime Application.';
+    }
+    if (status === 404) {
+      title = 'Notice';
+      text = 'No Selected Payroll Period!';
     }
 
     Swal.fire({ title, text, icon: 'error' });
@@ -290,35 +287,44 @@ async ProcessData(data: { employee: string, company: string, payrollperiod: stri
   try {
     showLoading();
 
-    // Fetch data
-    const [res_company, res_employee, res_worksched, res_attreg] = await Promise.all([
-      this.apiservice.getPNData('Company?limit_page_length=0'),
+    // Fetch data in parallel
+    const [res_employee, res_worksched, res_attreg] = await Promise.all([
+      //this.apiservice.getPNData('Company?limit_page_length=0'),
       this.apiservice.getPNData('Employee?fields=["name", "full_name", "company", "default_schedule"]&limit_page_length=0'),
       this.apiservice.getPNData('Work Shift?fields=["name", "time_in", "time_out", "work_shift_type"]&limit_page_length=0'),
-      this.apiservice.getPNData('Attendance Register?fields=["name", "employee", "employee_name", "card_in", "card_out", "target_date", "work_shift"]&limit_page_length=0')
+      this.apiservice.getPNData('Attendance Register?fields=["name", "employee", "employee_name", "card_in", "card_out", "target_date", "work_shift", "is_halfday", "is_absent", "is_lwop", "work"]&limit_page_length=0')
     ]);
 
     // Process data
-    this.companyList = res_company.data.map((v: any) => new Company(v.name));
-    this.employeeList = res_employee.data.map((v: any) => new Employee(v.name, v.full_name, v.company, v.default_schedule));
-    this.worksheduleList = res_worksched.data.map((v: any) => new WorkSchedule(v.name, v.time_in, v.time_out, v.work_shift_type));
-    this.attendanceregisterList = res_attreg.data.map((v: any) => new AttendanceRegister(v.name, v.employee, v.employee_name, v.card_in, v.card_out, v.target_date, v.work_shift));
+    //const mapCompany = new Map<string, Company>(res_company.data.map((v: any) => [v.name, new Company(v.name)]));
+    const mapEmployee = new Map<string, Employee>(res_employee.data.map((v: any) => [v.name, new Employee(v.name, v.full_name, v.company, v.default_schedule)]));
+    const mapWorkSchedule = new Map<string, WorkSchedule>(res_worksched.data.map((v: any) => [v.name, new WorkSchedule(v.name, v.time_in, v.time_out, v.work_shift_type)]));
+    const mapAttendanceRegister = new Map<string, AttendanceRegister>(res_attreg.data.map((v: any) => [v.name, new AttendanceRegister(v.name, v.employee, v.employee_name, v.card_in, v.card_out, v.target_date, v.work_shift, v.is_halfday, v.is_absent, v.is_lwop, v.work)]));
 
-    // Filter and process records
+    // Validate payroll period
     const payPeriod = this.periodList.find(period => period.name === data.payrollperiod);
     if (!payPeriod) {
       console.error('Payroll period not found');
+      showError(404);
       return;
     }
 
-    const attendanceReg = this.attendanceregisterList.filter(record => {
+    // Filter and process records
+    const attendanceReg = [...mapAttendanceRegister.values()].filter((record: AttendanceRegister) => {
       const targetDate = new Date(record.target_date);
-      return targetDate >= new Date(payPeriod.attendance_from) && targetDate <= new Date(payPeriod.attendance_to);
+      return targetDate >= new Date(payPeriod.attendance_from) &&
+        targetDate <= new Date(payPeriod.attendance_to) &&
+        record.is_absent === 0 &&
+        record.is_halfday === 0 &&
+        record.is_lwop === 0 &&
+        record.card_in !== null &&
+        record.card_out !== null &&
+        record.work >= 8;
     });
 
-    const results = attendanceReg.map(record => {
-      const employee = this.employeeList.find(emp => emp.name === record.employee);
-      const workShift = this.worksheduleList.find(ws => ws.name === record.work_shift);
+    const results = attendanceReg.map((record: AttendanceRegister) => {
+      const employee = mapEmployee.get(record.employee);
+      const workShift = mapWorkSchedule.get(record.work_shift);
 
       if (!employee || !workShift) {
         console.error('Employee or Work Shift not found');
@@ -340,7 +346,7 @@ async ProcessData(data: { employee: string, company: string, payrollperiod: stri
 
       const { year, month, day, hours, minutes, seconds } = formatDate(date);
       const newFormat = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
-
+      //NOTE: This returns object that will be pushed into people navee
       return {
         "doctype": "Overtime Application",
         "employee": record.employee,
@@ -359,30 +365,25 @@ async ProcessData(data: { employee: string, company: string, payrollperiod: stri
         "reason": "Automatically generated attendance processing using Angular",
         "linked_document": ""
       };
-    }).filter(result => result !== null);
+    }).filter((result: any) => result !== null);
 
     this.tableList = results.map((v: any) => new Table(v.employee, v.employee_name, v.work_shift, v.company, v.from_date, v.from_time, v.to_date, v.to_time));
 
-    // Post data
+    // Post data in parallel
     const totalResults = results.length;
-    let processedResults = 0;
-
-    for (const result of results) {
-      await this.apiservice.postData(result).toPromise();
-      processedResults++;
-      this.progress = (processedResults / totalResults) * 100;
+    if (totalResults > 0) {
+      const postPromises = results.map(result => this.apiservice.postData(result).toPromise());
+      await Promise.all(postPromises);
     }
 
     showSuccess();
 
   } catch (error: any) {
     console.error('Error processing data:', error);
-    showError(error.status); // Fallback to 500 if status is not available
-
+    showError(error.status || 500); // Fallback to 500 if status is not available
+  } finally {
+    this.progress = 0;
   }
-  finally{
-    this.progress = 0
-  }
-}  
+}
   
 }

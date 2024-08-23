@@ -16,7 +16,7 @@ export class GlobalApiService {
     private jsonAppConfigService: JsonAppConfigService
   ) {
     this.config = this.jsonAppConfigService.getConfig();
-   // console.log('API Base URL:', this.config?.APIBaseUrl);
+    console.log('API Base URL:', this.config?.APIBaseUrl);
   }
 
   private getOptions(): { headers: HttpHeaders } {

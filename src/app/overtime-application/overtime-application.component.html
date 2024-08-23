@@ -1,90 +1,76 @@
 <form [formGroup]="documentForm">
-
-    <c-container>
-        <c-row class="mt-4">
-            <c-card class="mb-4">
-                <c-card-header class="mt-2 mb-2">
-                    <strong>Overtime Application</strong>
-                </c-card-header>
-                <c-card class="mb-2">
-                    <c-card-body>
-                        <c-col [sm]="6">
-
-                            <c-row class="mb-2"> <!-- Payroll Period -->
-                                <label [sm]="4" cCol cLabel="col" for="payrollperiod" sizing="sm">
-                                    Payroll Period
-                                </label>
-                                <c-col [sm]="8" style="position: relative;">
-                                    <c-input-group sizing="sm">
-                                        <input type="text" class="form-control" [ngClass]="{
-                                             'border-danger': inputStatePeriod === 'danger',
-                                             'border-warning': inputStatePeriod === 'warning'
-                                           }" formControlName="payrollperiod" (input)="onPeriodInput($event)"
-                                            (focus)="onInputFocus($event, 'period')"
-                                            (blur)="onInputBlur($event, 'period')" sizing="sm" autocomplete="off"
-                                            placeholder="Type to search..." />
-
-                                        <!-- Autocomplete Dropdown for Payroll Periods -->
-                                        <div *ngIf="isPeriodDropdownVisible" class="autocomplete-dropdown">
-                                            <ul class="list-group" sizing="sm">
-                                                <li *ngFor="let o of filteredPeriods" class="list-group-item"
-                                                    (click)="onPeriodSelect(o.name, o)">
-                                                    {{ o.name }}
-                                                </li>
-                                            </ul>
-                                        </div>
-                                    </c-input-group>
-                                </c-col>
-                            </c-row>
-                        </c-col>
-                        <button class="btn" (click)="ProcessData({
+    <div class="container">
+        <div class="row mt-4">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <img src="https://play-lh.googleusercontent.com/9yE6bHr_ArAYaw_gS-sICLy90AIV8ImXveRdT_qAbwmELJ857TTS80J99aL1RZdpLyc=w600-h300-pc0xffffff-pd" alt="2GO Logo" class="logo">
+                    <h2>Overtime Application</h2>
+                </div>
+                <div class="card-body">
+                    <div class="search-button-container">
+                        <div class="input-group-container">
+                            <input type="text" class="form-control" 
+                                [ngClass]="{
+                                    'border-danger': inputStatePeriod === 'danger',
+                                    'border-warning': inputStatePeriod === 'warning'
+                                }" 
+                                formControlName="payrollperiod" 
+                                (input)="onPeriodInput($event)"
+                                (focus)="onInputFocus($event, 'period')"
+                                (blur)="onInputBlur($event, 'period')" 
+                                autocomplete="off"
+                                placeholder="Select Payroll Period..." 
+                            />
+                            <div *ngIf="isPeriodDropdownVisible" class="autocomplete-dropdown">
+                                <ul class="list-group">
+                                    <li *ngFor="let o of filteredPeriods" class="list-group-item"
+                                        (click)="onPeriodSelect(o.name, o)">
+                                        {{ o.name }}
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                        <button class="btn btn-primary" (click)="ProcessData({
                             employee: documentForm.get('employee')?.value!,
                             company: documentForm.get('company')?.value!,
                             payrollperiod: documentForm.get('payrollperiod')?.value!
-                          })" >Post Overtime</button>
-                    </c-card-body>
-                    
-                </c-card>
-                <c-card class="mb-2">
-                    
-
-
-                    <c-card-body>
+                        })">Post Overtime</button>
+                    </div>
+                    <div class="table-container mt-4">
                         <mat-progress-bar mode="determinate" [value]="progress"></mat-progress-bar>
-                        <table class="table-container" [cBorder]="1" bordered cTable>
-                            <thead>
-                                <tr>
-                                    <th scope="col">Employee</th>
-                                    <th scope="col">Employee Name</th>
-                                    <th scope="col">Company</th>
-                                    <th scope="col">From Date</th>
-                                    <th scope="col">From Time</th>
-                                    <th scope="col">To Date</th>
-                                    <th scope="col">To Time</th>
-                                    <th>Action</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr *ngFor="let t of tableList">
-                                    <th scope="row">{{ t.employee }}</th>
-                                    <td>{{ t.employee_name }}</td>
-                                    <td>{{ t.company }}</td>
-                                    <td>{{ t.from_date }}</td>
-                                    <td>{{ t.from_time }}</td>
-                                    <td>{{ t.to_date }}</td>
-                                    <td>{{ t.to_time }}</td>
-                                    <td>
-                                        <button class=""> Delete</button>
-                                    </td>
-                                </tr>
-                                
-                            </tbody>
-                        </table>
-
-                    </c-card-body>
-                </c-card>
-
-            </c-card>
-        </c-row>
-    </c-container>
+                        <div class="table-responsive">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Employee</th>
+                                        <th>Employee Name</th>
+                                        <th>Company</th>
+                                        <th>From Date</th>
+                                        <th>From Time</th>
+                                        <th>To Date</th>
+                                        <th>To Time</th>
+                                       <!--  <th>Action</th> -->
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr *ngFor="let t of tableList">
+                                        <td>{{ t.employee }}</td>
+                                        <td>{{ t.employee_name }}</td>
+                                        <td>{{ t.company }}</td>
+                                        <td>{{ t.from_date }}</td>
+                                        <td>{{ t.from_time }}</td>
+                                        <td>{{ t.to_date }}</td>
+                                        <td>{{ t.to_time }}</td>
+                                      <!--   <td>
+                                            <button class="btn btn-danger btn-sm">Delete</button>
+                                        </td> -->
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </form>
