@@ -1,0 +1,211 @@
+/* Import Google Fonts for better typography */
+//@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap');
+
+/* General Container Styles */
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+  background-color: #f4f6f9; /* Light, sophisticated background */
+  border-radius: 12px; /* Rounded corners for a modern look */
+}
+
+/* Card Styles */
+.card {
+  border-radius: 12px;
+  overflow: hidden;
+  background: #ffffff; /* Clean white background */
+  border: 1px solid #e0e0e0; /* Subtle border */
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Light shadow for depth */
+}
+
+/* Card Header Styles */
+.card-header {
+  background: #EB008B; /* Deep pink background */
+  color: #ffffff; /* White text for high contrast */
+  padding: 30px 20px; /* Added padding for better spacing */
+  text-align: center;
+  border-bottom: 1px solid #eb5ab8; /* Slightly darker border */
+  position: relative; /* For logo positioning */
+}
+
+/* Logo Styles */
+.logo {
+  max-height: 100px; /* Larger logo size for better visibility */
+ 
+  position: absolute;
+  top: 0px;
+  left: 50%;
+  transform: translateX(-50%); /* Center logo horizontally */
+  z-index: 1; /* Ensure it sits above other elements */
+}
+
+/* Card Header Title */
+.card-header h2 {
+  margin-top: 60px; /* Space for the logo */
+  font-size: 2rem; /* Adjust font size for prominence */
+  font-weight: 500; /* Medium weight for readability */
+  color: #ffffff; /* White text color */
+}
+
+/* Card Body Styles */
+.card-body {
+  padding: 20px;
+  background-color: #ffffff; /* Consistent white background */
+}
+
+/* Search and Button Container */
+.search-button-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px; /* Adequate spacing for a clean look */
+  align-items: center;
+}
+
+/* Input Group Styles */
+.input-group-container {
+  position: relative;
+  flex: 1;
+}
+
+/* Form Control Styles */
+.form-control {
+  border-radius: 8px;
+  border: 1px solid #ced4da; /* Light gray border */
+  padding: 14px; /* Comfortable padding */
+  transition: border-color 0.3s, box-shadow 0.3s;
+  font-family: 'Roboto', sans-serif; /* Elegant font */
+}
+
+.form-control:focus {
+  border-color: #003d7a; /* Deep blue on focus */
+  box-shadow: 0 0 0 0.2rem rgba(0, 61, 122, 0.25); /* Subtle shadow */
+}
+
+/* Autocomplete Dropdown */
+.autocomplete-dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  background-color: #ffffff; /* Clean background */
+  border: 1px solid #dee2e6; /* Soft border */
+  border-radius: 8px;
+  max-height: 200px;
+  overflow-y: auto;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+}
+
+.list-group-item {
+  cursor: pointer;
+  padding: 14px;
+  transition: background-color 0.3s;
+  font-family: 'Roboto', sans-serif; /* Elegant font */
+}
+
+.list-group-item:hover {
+  background-color: #f1f3f5; /* Light hover effect */
+}
+
+/* Button Styles */
+.btn {
+  border: none;
+  border-radius: 8px;
+  padding: 12px 24px; /* Comfortable padding */
+  font-size: 14px;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background-color 0.3s, transform 0.3s;
+  font-family: 'Roboto', sans-serif; /* Consistent font */
+}
+
+.btn-primary {
+  background-color: #003d7a; /* Deep blue background */
+  color: #ffffff;
+}
+
+.btn-primary:hover {
+  background-color: #002a54; /* Darker blue on hover */
+  transform: translateY(-1px); /* Subtle lift effect */
+}
+
+.btn-danger {
+  background-color: #dc3545; /* Red background */
+  color: #ffffff;
+}
+
+.btn-danger:hover {
+  background-color: #c82333; /* Darker red on hover */
+  transform: translateY(-1px);
+}
+
+/* Status Bar Styles */
+.mat-progress-bar {
+  height: 8px; /* Slimmer height for a subtle look */
+  border-radius: 4px; /* Rounded corners for smooth finish */
+  background-color: #e0e0e0; /* Light gray background */
+}
+
+.mat-progress-bar .mat-progress-bar-fill {
+  background-color: #003d7a; /* Deep blue fill */
+}
+
+/* Table Styles */
+.table-container {
+  margin-top: 20px;
+  max-height: 400px; /* Height for scrolling */
+  overflow-y: auto; /* Enable vertical scrolling */
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.table th, .table td {
+  padding: 14px; /* Comfortable padding */
+  text-align: left;
+  border-bottom: 1px solid #e0e0e0; /* Subtle border for rows */
+  font-family: 'Roboto', sans-serif; /* Elegant font */
+}
+
+.table th {
+  background-color: #f8f9fa; /* Light gray for header */
+  font-weight: 500; /* Medium weight for headers */
+  color: #495057; /* Dark gray text */
+  position: -webkit-sticky; /* For Safari */
+  position: sticky;
+  top: 0; /* Stick to the top */
+  z-index: 2; /* Ensure it stays above other content */
+  border-bottom: 2px solid #dee2e6; /* Slightly darker border */
+}
+
+.table tbody tr:hover {
+  background-color: #f1f3f5; /* Subtle hover effect */
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+  .search-button-container {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .btn {
+    width: 100%; /* Full-width buttons on smaller screens */
+  }
+
+  .form-control {
+    width: 100%;
+  }
+
+  .card-header h2 {
+    font-size: 1.5rem; /* Slightly smaller font size on smaller screens */
+  }
+
+  .table th, .table td {
+    font-size: 12px;
+    padding: 10px;
+  }
+}

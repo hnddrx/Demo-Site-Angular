@@ -1,0 +1,76 @@
+<form [formGroup]="documentForm">
+    <div class="container">
+        <div class="row mt-4">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <img src="https://play-lh.googleusercontent.com/9yE6bHr_ArAYaw_gS-sICLy90AIV8ImXveRdT_qAbwmELJ857TTS80J99aL1RZdpLyc=w600-h300-pc0xffffff-pd" alt="2GO Logo" class="logo">
+                    <h2>Overtime Application</h2>
+                </div>
+                <div class="card-body">
+                    <div class="search-button-container">
+                        <div class="input-group-container">
+                            <input type="text" class="form-control" 
+                                [ngClass]="{
+                                    'border-danger': inputStatePeriod === 'danger',
+                                    'border-warning': inputStatePeriod === 'warning'
+                                }" 
+                                formControlName="payrollperiod" 
+                                (input)="onPeriodInput($event)"
+                                (focus)="onInputFocus($event, 'period')"
+                                (blur)="onInputBlur($event, 'period')" 
+                                autocomplete="off"
+                                placeholder="Select Payroll Period..." 
+                            />
+                            <div *ngIf="isPeriodDropdownVisible" class="autocomplete-dropdown">
+                                <ul class="list-group">
+                                    <li *ngFor="let o of filteredPeriods" class="list-group-item"
+                                        (click)="onPeriodSelect(o.name, o)">
+                                        {{ o.name }}
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                        <button class="btn btn-primary" (click)="ProcessData({
+                            employee: documentForm.get('employee')?.value!,
+                            company: documentForm.get('company')?.value!,
+                            payrollperiod: documentForm.get('payrollperiod')?.value!
+                        })">Post Overtime</button>
+                    </div>
+                    <div class="table-container mt-4">
+                        <mat-progress-bar mode="determinate" [value]="progress"></mat-progress-bar>
+                        <div class="table-responsive">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Employee</th>
+                                        <th>Employee Name</th>
+                                        <th>Company</th>
+                                        <th>From Date</th>
+                                        <th>From Time</th>
+                                        <th>To Date</th>
+                                        <th>To Time</th>
+                                       <!--  <th>Action</th> -->
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr *ngFor="let t of tableList">
+                                        <td>{{ t.employee }}</td>
+                                        <td>{{ t.employee_name }}</td>
+                                        <td>{{ t.company }}</td>
+                                        <td>{{ t.from_date }}</td>
+                                        <td>{{ t.from_time }}</td>
+                                        <td>{{ t.to_date }}</td>
+                                        <td>{{ t.to_time }}</td>
+                                      <!--   <td>
+                                            <button class="btn btn-danger btn-sm">Delete</button>
+                                        </td> -->
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
